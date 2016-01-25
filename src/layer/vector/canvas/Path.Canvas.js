@@ -23,6 +23,7 @@ L.Path = (L.Path.SVG && !window.L_PREFER_CANVAS) || !L.Browser.canvas ? L.Path :
 
 	setStyle: function (style) {
 		L.setOptions(this, style);
+		this._addLineDash();
 
 		if (this._map) {
 			this._updateStyle();
@@ -63,6 +64,15 @@ L.Path = (L.Path.SVG && !window.L_PREFER_CANVAS) || !L.Browser.canvas ? L.Path :
 		this._ctx = this._map._canvasCtx;
 	},
 
+	_addLineDash: function() {
+		if (this.options.dashArray) {
+			var dashArray = this.options.dashArray.split(',').map(function(currentValue) {
+				return parseFloat(currentValue);
+			});
+			this.options.lineDash = dashArray;
+		}
+	},
+
 	_updateStyle: function () {
 		var options = this.options;
 
@@ -80,12 +90,20 @@ L.Path = (L.Path.SVG && !window.L_PREFER_CANVAS) || !L.Browser.canvas ? L.Path :
 		if (options.lineJoin) {
 			this._ctx.lineJoin = options.lineJoin;
 		}
+		this._addLineDash();
 	},
 
 	_drawPath: function () {
 		var i, j, len, len2, point, drawMethod;
 
 		this._ctx.beginPath();
+
+		if (this._ctx.setLineDash && this.options && this.options.lineDash) {
+			this._ctx.setLineDash(this.options.lineDash);
+		}
+		else {
+			this._ctx.setLineDash([]);
+		}
 
 		for (i = 0, len = this._parts.length; i < len; i++) {
 			for (j = 0, len2 = this._parts[i].length; j < len2; j++) {

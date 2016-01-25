@@ -87,6 +87,16 @@ L.Path = (L.Path.SVG && !window.L_PREFER_CANVAS) || !L.Browser.canvas ? L.Path :
 
 		this._ctx.beginPath();
 
+		if (this._ctx.setLineDash && this.options && this.options.dashArray) {
+			var dashArray = this.options.dashArray.split(",").map(function(currentValue) {
+				return parseFloat(currentValue);
+			});
+			this._ctx.setLineDash(dashArray);
+		}
+		else {
+			this._ctx.setLineDash([]);
+		}
+
 		for (i = 0, len = this._parts.length; i < len; i++) {
 			for (j = 0, len2 = this._parts[i].length; j < len2; j++) {
 				point = this._parts[i][j];

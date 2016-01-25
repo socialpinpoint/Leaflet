@@ -80,6 +80,12 @@ L.Path = (L.Path.SVG && !window.L_PREFER_CANVAS) || !L.Browser.canvas ? L.Path :
 		if (options.lineJoin) {
 			this._ctx.lineJoin = options.lineJoin;
 		}
+		if (options.dashArray) {
+			var dashArray = this.options.dashArray.split(",").map(function(currentValue) {
+				return parseFloat(currentValue);
+			});
+			this.options.lineDash = dashArray;
+		}
 	},
 
 	_drawPath: function () {
@@ -87,11 +93,8 @@ L.Path = (L.Path.SVG && !window.L_PREFER_CANVAS) || !L.Browser.canvas ? L.Path :
 
 		this._ctx.beginPath();
 
-		if (this._ctx.setLineDash && this.options && this.options.dashArray) {
-			var dashArray = this.options.dashArray.split(",").map(function(currentValue) {
-				return parseFloat(currentValue);
-			});
-			this._ctx.setLineDash(dashArray);
+		if (this._ctx.setLineDash && this.options && this.options.lineDash) {
+			this._ctx.setLineDash(lineDash);
 		}
 		else {
 			this._ctx.setLineDash([]);
